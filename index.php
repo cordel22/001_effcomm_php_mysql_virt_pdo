@@ -7,6 +7,10 @@ require('./includes/config.inc.php');
 //  logged in admin
 /* $_SESSION['user_type'] = 'admin'; */
 
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+  include('./includes/login.php');
+}
+
 include('./includes/header.html');
 
 require(MYSQL);

@@ -29,3 +29,29 @@ function create_form_input($name, $type, $errors)
     echo '</textarea>';
   } //  End of primary IF-ELSE.
 } //  End of the create_form_input() function.
+
+//  p.78  / 95
+
+function get_password_hash($password)
+{
+  global $dbc;
+  return mysqli_real_escape_string($dbc, hash_hmac('sha256', $password, 'c#haRl891', true));
+}
+
+function redirect_invalid_user($check = 'user_id', $destination = 'index.php', $protocol = 'http://')
+{
+  if (!isset($_SESSION[$check])) {
+    $url = $protocol . BASE_URL . $destination;
+    header("Location: $url");
+    exit();
+  }
+}
+
+if (!headers_sent()) {
+  //  Redirect code.
+} else {
+  include_once('./includes/header.html');
+  trigger_error('You do not hve permission to access this page.
+    Plese log i and try again');
+  include_once('./includes/footer.html');
+}
