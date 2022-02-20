@@ -5,6 +5,7 @@ $contact_email = 'cordelfenevall@gmail.com';
 define('BASE_URI', '/path/to/Web/parent/folder/');
 define('BASE_URL', 'www.example.com/');
 define('MYSQL', '/path/to/mysql.inc.php');
+define('PDFS_DIR', BASE_URI . 'pdfs/');   //  where is the PDFS_DIR..?
 
 session_start();
 
