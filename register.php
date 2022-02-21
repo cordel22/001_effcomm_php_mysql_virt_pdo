@@ -49,15 +49,42 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $r = mysqli_query($dbc, $q);
     $rows = mysqli_num_rows($r);
     if ($rows == 0) { //  No problems!
+      //  p 146 / 163
+      /* $q = "INSERT INTO users (username, email, pass, first_name, last_name, date_expires)
+        VALUES ('$u', '$e', '" . create_password_hash($p) . "', '$fn', '$ln', ADDATE(NOW(), INTERVAL 1 MONTH))"; */
       $q = "INSERT INTO users (username, email, pass, first_name, last_name, date_expires)
-        VALUES ('$u', '$e', '" . create_password_hash($p) . "', '$fn', '$ln', ADDATE(NOW(), INTERVAL 1 MONTH))";
+        VALUES ('$u', '$e', '" . get_password_hash($p) . "', '$fn', '$ln', SUBDATE(NOW(), INTERVAL 1 DAY))";
       $r = mysqli_query($dbc, $q);
 
       if (mysqli_affected_rows($dbc) == 1) {
+        //  p 146 / 163
+        $uid = mysqli_insert_id($dbc);
+        $_SESSION['reg_user_id'] = $uid;
+        //  page 145 / 162 update
         echo '<h3>Thanks!</h3>
           <p>
             Thank you for registering!
-            You may now log in and access the site\'s content.</p>';
+            To complete the process, please now lick the button below so that you may pay for your
+            site access via PayPal. The cost is $10 (US) per year.<strong>Note: When
+            you complete your payment at PayPal, please click the button to return to
+            this site.</strong></p>";
+            <!--  asi netrba totok
+            You may now log in and access the site\'s content.</p>
+            -->
+            ';
+        //  page 146 / 163 update paypal sandbox button
+        //  page 152 / 169
+        echo '<form action="https://www.sandbox.paypal.com/cgi-bin/webscr" method="post">
+          <input type="hidden" name="custom" value="' . $uid . '">
+          <input type="hidden" name="cmd" value="_s-xclick">
+          <input type="hidden" name="email" value="' . $e . '">
+          <input type="hidden" name="hosted_button_id" value="8YW8FZDELF296">
+          <input type="image" src="https://www.sandbox.paypal.com/en_US/i/
+            btn/btn_subscribeCC_LG.gif" border="0" name="submit" alt="PatPal - 
+            The safer, easier way to pay online!">
+          <img alt="" border="0" src="https://www.sandbox.paypal.com/en_US/i/
+            scr/pixel.gif" width="1" height="1">
+          </form>';
         $body = "Thnk you for registering at <whatever site>. Blah. Blah. Blah.\n\n";
         mail($_POST['email'], 'Registration Confirmation', $body, 'From: cordelfenevall@gmail.com');
         include('./includes/footer.html');
