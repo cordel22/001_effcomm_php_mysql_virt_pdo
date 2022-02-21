@@ -20,7 +20,8 @@ require(MYSQL);
   <input type="hidden" name="custom" value="
     <?php
     echo $_SESSION['user_id'];
-    ?>
+    ?>">
+  <input type="hidden" name="hosted_button_id" value="8YW8FZDELF296">
   <input type=" submit" name="submit_button" value="Renew &rarr;" id="submit_button" class="formbutton" />
 </form>
 <?php include('./includes/footer.html'); ?>
