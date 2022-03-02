@@ -3,7 +3,7 @@ function create_form_input($name, $type, $errors)
 {
   $value = false;
   if (isset($_POST[$name])) $value = $_POST[$name];
-  if ($value && get_magic_quotes_gpc()) $value = stripslashes($value);
+  //  if ($value && get_magic_quotes_gpc()) $value = stripslashes($value);
 
 
   if (($type == 'text') || ($type == 'password')) {
@@ -38,11 +38,11 @@ function get_password_hash($password)
   return mysqli_real_escape_string($dbc, hash_hmac('sha256', $password, 'c#haRl891', true));
 }
 
-function redirect_invalid_user($check = 'user_id', $destination = 'index.php', $protocol = 'http://')
+function redirect_invalid_user($check = 'user_id', $destination = 'index.php', $protocol = ''/* 'http://' */) //  localhost dont need protocol
 {
   if (!isset($_SESSION[$check])) {
     $url = $protocol . BASE_URL . $destination;
-    header("Location: $url");
+    header("Location:$url");
     exit();
   }
 }
@@ -52,6 +52,6 @@ if (!headers_sent()) {
 } else {
   include_once('./includes/header.html');
   trigger_error('You do not hve permission to access this page.
-    Plese log i and try again');
+    Plese log in and try again');
   include_once('./includes/footer.html');
 }

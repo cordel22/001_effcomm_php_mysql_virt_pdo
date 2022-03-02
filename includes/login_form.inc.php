@@ -3,7 +3,7 @@ if (!isset($login_errors)) $login_errors = array();
 require_once('./includes/form_functions.inc.php');
 ?>
 
-<div class="little">
+<div class="title">
   <h4>Login</h4>
 </div>
 <form action="index.php" method="post" accept-charset="utf-8">

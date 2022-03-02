@@ -5,6 +5,14 @@ DEFINE('DB_HOST', 'localhost');
 DEFINE('DB_NAME', 'ecommerce1');
 
 $dbc = mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
+//  from gfx 18
+//  If no connection could be made, trigger an error:
+if (!$dbc) {
+  trigger_error('Could not connect to MySQL: ' .  mysqli_connect_error());
+} else {
+  //  Otherwise, set the encoding:
+  mysqli_set_charset($dbc, 'utf8');
+}
 
 mysqli_set_charset($dbc, 'utf8');
 

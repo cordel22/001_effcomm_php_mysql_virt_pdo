@@ -8,7 +8,8 @@ require('./includes/config.inc.php');
 /* $_SESSION['user_type'] = 'admin'; */
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-  include('./includes/login.php');
+  /* include('./includes/login.php'); */
+  include('./includes/login_form.inc.php');
 }
 
 include('./includes/header.html');

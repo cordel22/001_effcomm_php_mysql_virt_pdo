@@ -1,5 +1,7 @@
 <?php
 require('./includes/config.inc.php');
+require('./includes/form_functions.inc.php'); //  book missed this
+
 redirect_invalid_user();
 $page_title = 'Change Your Password';
 include('./includes/header.html');
@@ -11,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   if (!empty($_POST['current'])) {
     $current = mysqli_real_escape_string($dbc, $_POST['current']);
   } else {
-    $pass_errors['pass2'] = 'Your password did not match the confirmed password!';
+    $pass_errors['current'] = 'Please enter your current password!';
   }
   if (preg_match('/^(\w*(?=\w*\d)(?=\w*[a-z])(?=\w*[A-Z])\w*){6,20}$/', $_POST['pass1'])) {
     if ($_POST['pass1'] == $_POST['pass2']) {
@@ -60,7 +62,7 @@ require('./includes/form_functions.inc.php');
     </label>
     <br />
     <?php
-    create_form_input('pass1', 'password', $pass_errors);
+    create_form_input('current', 'password', $pass_errors);
     ?>
   </p>
   <p>
