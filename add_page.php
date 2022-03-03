@@ -1,6 +1,20 @@
 <?php
+
+//  to test the logged in
+/* $_SESSION['user_id'] = 1; */
+
+//  logged in admin
+// $_SESSION['user_type'] = 'admin';
+//  $_SESSION[$check] = 'user_admin';
+
+
 require_once('./includes/config.inc.php');
-redirect_invalid_user('user_admin');  //  defined in config.inc.php
+//  debug
+//  require_once('./includes/form_functions.inc.php');
+
+//  redirect_invalid_user(/* 'user_admin' */);  //  defined in form_functions.inc.php
+//  debug
+
 
 $page_title = 'Add a Site Content Page';
 include('./includes/header.html');
@@ -21,6 +35,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   } else {
     $add_page_errors['category'] = 'Please select a category!';
   }
+  if (!empty($_POST['description'])) {
+    $d = mysqli_real_escape_string($dbc, strip_tags($_POST['description']));
+  } else {
+    $add_page_errors['description'] = 'Please enter a description!';
+  }
+
+  if (!empty($_POST['content'])) {
+    $allowed = '<div><p><span><br><a><img><h1><h2><h3><h4><ul><ol><li><blockquote>';
+    $c = mysqli_real_escape_string($dbc, strip_tags($_POST['content'], $allowed));
+  } else {
+    $add_page_errors['content'] = 'Please enter the content!';
+  }
+
   if (empty($add_page_errors)) {  //  If everything's OK.
     $q = "INSERT INTO pages (category_id, title, description, content) VALUES ($cat, '$t', '$d', '$c')";
     $r = mysqli_query($dbc, $q);
@@ -51,7 +78,7 @@ require('includes/form_functions.inc.php');
                               )) echo ' class="error"'; ?>>
         <option>Select One</option>
         <?php //  Retrieve ll the categories and add to the pull-down menu:
-        $q = "SELECT id, category FROM categories ORDERED BY category ASC";
+        $q = "SELECT id, category FROM categories ORDER BY category ASC";
         $r = mysqli_query($dbc, $q);
         while ($row = mysqli_fetch_array($r, MYSQLI_NUM)) {
           echo "<option value=\"$row[0]\"";
@@ -99,10 +126,10 @@ require('includes/form_functions.inc.php');
     width: 800,
     height: 400,
     //  pipe or I nizsie..?
-    plugins: "advlink,advlist,autoresize,autosave,contextmenu,fullscreen,iespell, inlinepopups,media,paste,preview,safari,searchplace,visualchars,wordcount,xhtmlxtras",
-    theme_advanced_buttons1: "cut,copy,paste,pastetext,pasteword,|,undo,redo,removeformat,|search,replace,|,cleanup,help,code,preview,visualaid,fullscreen",
-    theme_advanced_buttons2: "bold,italic,underline,strikethrough,I,justifyleft,justifycenter,justifyright,justifyfull,|,formatselect,|,bullist,numlist,|,outdent,indent,blockquote,|,sub,sup,cite,abbr",
-    theme_advnced_button3: "hr,I,link,unlink,anchor,image,|,charmap,emotions,iespell,media",
+    plugins: "advlink,advlist,autoresize,autosave,contextmenu,fullscreen,iespell, inlinepopups,media,paste,preview,safari,searchreplace,visualchars,wordcount,xhtmlxtras",
+    theme_advanced_buttons1: "cut,copy,paste,pastetext,pasteword,|,undo,redo,removeformat,|,search,replace,|,cleanup,help,code,preview,visualaid,fullscreen",
+    theme_advanced_buttons2: "bold,italic,underline,strikethrough,|,justifyleft,|,justifycenter,justifyright,justifyfull,|,formatselect,|,bullist,numlist,|,outdent,indent,blockquote,|,sub,sup,cite,abbr",
+    theme_advanced_buttons3: "hr,|,link,unlink,anchor,image,|,charmap,emotions,iespell,media",
 
     theme_advanced_toolbar_location: "top",
     theme_advanced_toolbar_align: "left",

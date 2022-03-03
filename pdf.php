@@ -17,7 +17,7 @@ if (
       $row = mysqli_fetch_array($r, MYSQLI_ASSOC);
       $valid = true;
 
-      if (isset($_SSSION['user_not_expired'])) {
+      if (isset($_SESSION['user_not_expired'])) {
         header('Content-type:application/pdf');
         header('Content-Disposition:inline;filename="' . $row['file_name'] . '"');
         $fs = filesize($file);
@@ -26,7 +26,7 @@ if (
         exit();
       } else {  //  Inactive account!
         $page_title = $row['title'];
-        include ('./includes/header.html');
+        include('./includes/header.html');
         echo "<h3>$page_title</h3>";
         if (isset($_SESSION['user_id'])) {
           echo '<p class="error">Thank you for your interest in this
@@ -37,9 +37,9 @@ if (
           echo '<p class="error">Thank you for you interest in this
             content. You must be logged in as a registered user 
             to view this file.</p>';
-        }   
+        }
         echo "<div>{$row['description']}</div>";
-        include ('./includes/footer.html');
+        include('./includes/footer.html');
       } //  End of user IF-ELSE.
     } //  End of mysqli_num_rows() IF.
   } //  End of file_exists() IF.

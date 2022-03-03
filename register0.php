@@ -5,47 +5,12 @@ include('./includes/header.html');
 require(MYSQL);
 require('./includes/form_functions.inc.php');
 
-/* 
-//debug
-$ord = '11';
+//  p 84  / 101
 
-$u = $ord . "test_u";
-
-$e = $ord . "test_e";
-
-$p = $ord . "test_p";
-
-$pass = 'password_hash($p, PASSWORD_DEFAULT)';
-
-$fn = $ord . "test_fn";
-
-$ln = $ord . "test_ln";
-
-
-//  debug
-echo "<br />VALUES; ";
-//  debug
-echo "<br /> u :  " . $u;
-//  debug
-echo "<br /> e :  " . $e;
-//  debug
-echo "<br /> password hash : " . password_hash($p, PASSWORD_DEFAULT);
-//  debug
-echo "<br /> fn :  " . $fn;
-//  debug
-echo "<br />ln :  " . $ln;
-//  debug
-//echo "<br /> DDDaTE : " . ADDDATE(NOW(), INTERVAL 1 MONTH);
-
-//  debug
- */
-//  konec debug
-
-
+//  $php_errors = array();
 $reg_errors = array();
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-  //  nezobere opakovane hodnoty, ale nevaruje o tom
   if (preg_match('/^[A-Z\'.-]{2,20}$/i', $_POST['first_name'])) {
     $fn = mysqli_real_escape_string($dbc, $_POST['first_name']);
   } else {
@@ -64,14 +29,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $reg_errors['username'] = 'Please enter a desired username!';
   }
 
-  if (filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
+  if (/* filter_var( */$_POST['email']/* , FILTER_VALIDATE_EMAIL) */) {
     $e = mysqli_real_escape_string($dbc, $_POST['email']);
   } else {
     $reg_errors['email'] = 'Please enter a valid email address!';
   }
 
-  /* if (preg_match('/^(\w*(?=\w*\d)(?=\w*[a-z])(?=\w*[A-Z])\w*){6,20}$/', $_POST['pass1'])) { */
-  if (preg_match('/^(?=.*\d)(?=.*[A-Z])(?=.*[a-z]).{6,20}$/', $_POST['pass1'])) {
+  if (/* preg_match('/^(\w*(?=\w*\d)(?=\w*[a-z])(?=\w*[A-Z])\w*){6,20}$/', */$_POST['pass1'])/* ) */ {
     if ($_POST['pass1'] == $_POST['pass2']) {
       $p = mysqli_real_escape_string($dbc, $_POST['pass1']);
     } else {
@@ -85,18 +49,58 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $q = "SELECT email, username FROM users WHERE email='$e' OR username='$u'";
     $r = mysqli_query($dbc, $q);
     $rows = mysqli_num_rows($r);
+    //  debug
+    echo "connected to database";
+    //  konec debug
+
+    //  debug
+    echo "<br /> rows = " . $rows;
+    //  konec debug
 
     if ($rows == 0) { //  No problems!
-
+      //  p 146 / 163
+      //  debug
+      echo "<br />lets try insert query";
+      //  konec debug
+      //  debug
+      // $q = "INSERT INTO users (username, email, pass, first_name, last_name, date_expires)
+      //   VALUES ('$u', '$e', '" . password_hash($p, PASSWORD_DEFAULT)/* create_password_hash($p) */ . "', '$fn', '$ln', ADDDATE(NOW(), INTERVAL 1 MONTH))";
+      // $q = "INSERT INTO users (username, email, pass, first_name, last_name, date_expires)
+      // VALUES ('$u', '$e', '" . password_hash($p, PASSWORD_DEFAULT)/* create_password_hash($p) */ . "', '$fn', '$ln', DATE_ADD(
+      //       NOW(), 
+      //       INTERVAL 1 DAY
+      //   ))";
       $q = "INSERT INTO users (username, email, pass, first_name, last_name, date_expires)
-           VALUES ('$u', '$e', '" . substr(password_hash($p, PASSWORD_DEFAULT), 5, 30) . "', '$fn', '$ln', ADDDATE(NOW(), INTERVAL 1 MONTH))";
+           VALUES ('2test_u', '$e', '2test_pass', '2test_fn', '2test_ln', NOW())";
+      //  konec debug
       //  p 146 / 163
       /* $q = "INSERT INTO users (username, email, pass, first_name, last_name, date_expires)
         VALUES ('$u', '$e', '" . get_password_hash($p) . "', '$fn', '$ln', SUBDATE(NOW(), INTERVAL 1 DAY))";
         */
       $r = mysqli_query($dbc, $q);
+      //  debug
+      echo "<br />VALUES; ";
+      //  debug
+      echo "<br /> u :  " . $u;
+      //  debug
+      echo "<br /> e :  " . $e;
+      //  debug
+      echo "<br /> password hash : " . password_hash($p, PASSWORD_DEFAULT);
+      //  debug
+      echo "<br /> fn :  " . $fn;
+      //  debug
+      echo "<br />ln :  " . $ln;
+      //  debug
+      //echo "<br /> DDDaTE : " . ADDDATE(NOW(), INTERVAL 1 MONTH);
 
-
+      //  debug
+      /* echo "<br />mysqli_affected_rows($dbc) == 1" . !!(mysqli_affected_rows($dbc) == 1); */ //  picovina
+      //  echo "mysqli_num_rows($r) = " .  mysqli_num_rows($r);
+      echo "<br />ide var_dump od r :<br />";
+      var_dump($r);
+      echo "<br />";
+      echo "<br /> a tu kurva nic z r = " .  var_dump($r);
+      //  konec debug
 
       if (mysqli_affected_rows($dbc) == 1) {
         //  p 146 / 163

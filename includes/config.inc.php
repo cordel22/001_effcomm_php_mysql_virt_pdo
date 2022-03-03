@@ -5,7 +5,7 @@ $contact_email = 'cordelfenevall@gmail.com';
 define('BASE_URI', 'C:\Users\Sisi\Desktop\akcia_14_07_21\php-14-07-21\effcomm_php_mysql\001_effcomm_php_mysql_virt'/* '/path/to/Web/parent/folder/' */);
 define('BASE_URL', 'http://localhost:3000/'/* 'www.example.com/' */);
 define('MYSQL', 'C:\Users\Sisi\Desktop\akcia_14_07_21\php-14-07-21\effcomm_php_mysql\001_effcomm_php_mysql_virt\mysql.inc.php'/* '/path/to/mysql.inc.php' */);
-define('PDFS_DIR', BASE_URI . 'includes/pdfs/');   //  where is the PDFS_DIR..?
+define('PDFS_DIR', BASE_URI . '/includes/pdfs/');   //  where is the PDFS_DIR..?
 
 session_start();
 

@@ -1,7 +1,7 @@
 <?php
 require_once('./includes/config.inc.php');
-
-redirect_invalid_user('user_admin');
+//  debug maybe evn form_function higher
+//  redirect_invalid_user('user_admin');
 
 $page_title = 'Add a PDF';
 include('./includes/header.html');
@@ -36,8 +36,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       $add_pdf_errors['pdf'] = 'The uploaded file was not a PDF.';
     }
     if (!array_key_exists('pdf', $add_pdf_errors)) {
-      $tmp_name = sha1($file['name'] . uniqid('', true));
-      $dest = PDFS_DIR . $tmp_name . '_tmp';
+      $tmp_name = sha1($file['name']  . uniqid('', true));
+      $dest = PDFS_DIR . $tmp_name  . '_tmp';
 
       if (move_uploaded_file($file['tmp_name'], $dest)) {
         $_SESSION['pdf']['tmp_name'] = $tmp_name;
@@ -73,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   if (empty($add_pdf_errors)) { //  If everything's OK.
     $fn = mysqli_real_escape_string($dbc, $_SESSION['pdf']['file_name']);
     $tmp_name = mysqli_real_escape_string($dbc, $_SESSION['pdf']['tmp_name']);
-    $size = (int) $_SSSION['pdf']['size'];
+    $size = (int) $_SESSION['pdf']['size'];
     $q = "INSERT INTO pdfs (tmp_name, title, description, file_name, size)
       VALUES ('$tmp_name', '$t', '$d', '$fn', $size)";
     $r = mysqli_query($dbc, $q);
@@ -100,7 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 require('includes/form_functions.inc.php');
 ?>
 <h3>Add a PDF</h3>
-<form enctype="multiprt/form-data" action="add_pdf.php" method="post" accept-charset="utf-8">
+<form enctype="multipart/form-data" action="add_pdf.php" method="post" accept-charset="utf-8">
   <input type="hidden" name="MAX_FILE_SIZE" value="1048576" />
   <fieldset>
     <legend>Fill out the form to dd a PDF to the site:</legend>
@@ -123,7 +123,7 @@ require('includes/form_functions.inc.php');
           echo "Currently '{$_SESSION['pdf']['file_name']}'";
         }
       } //  end of errors IF-ELSE.
-      ?><smll>PDF only,1MB Limit</small></p>
+      ?><small>PDF only,1MB Limit</small></p>
     <p><input type="submit" name="submit_button" value="Add this PDf" id="submit_button" class="formbutton" />
     </p>
   </fieldset>

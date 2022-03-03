@@ -8,6 +8,14 @@ if (isset($_GET['id']) && filter_var($_GET['id'], FILTER_VALIDATE_INT, array('mi
   $q = 'SELECT category FROM categories WHERE id=' . $_GET['id'];
   $r = mysqli_query($dbc, $q);
 
+  if (mysqli_num_rows($r) != 1) {
+    $page_title = 'Error!';
+    include('./includes/header.html');
+    echo '<p class="error">This page has been acessed in error.</p>';
+    include('./includes/footer.html');
+    exit();
+  }
+
   list($page_title) = mysqli_fetch_array($r, MYSQLI_NUM);
   include('./includes/header.html');
   echo "<h3>$page_title</h3>";
@@ -30,7 +38,7 @@ if (isset($_GET['id']) && filter_var($_GET['id'], FILTER_VALIDATE_INT, array('mi
     }
   } else {
     echo '<p>There are currently no pages of content associted with
-          this category. Please check back agin!</p>';
+          this category. Please check back again!</p>';
   }
 } else {  //  No valid ID.
   $page_title = 'Error!';

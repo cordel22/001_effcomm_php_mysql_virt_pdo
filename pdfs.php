@@ -22,7 +22,9 @@ $q = 'SELECT tmp_name, title, description, size FROM pdfs ORDER BY date_created 
 $r = mysqli_query($dbc, $q);
 if (mysqli_num_rows($r) > 0) {
   while ($row = mysqli_fetch_array($r, MYSQLI_ASSOC)) {
-    echo "<div><h4><a href=\"view_pdf.php?id={$row['tmp_name']}\">
+    //  debug view_pdf.php to pdf.php
+    /* echo "<div><h4><a href=\"view_pdf.php?id={$row['tmp_name']}\"> */
+    echo "<div><h4><a href=\"pdf.php?id={$row['tmp_name']}\">
         {$row['title']}</a>({$row['size']}kb)</h4><p>{$row['description']}
         </p></div>\n";
   } //  END of WHILE loop.
