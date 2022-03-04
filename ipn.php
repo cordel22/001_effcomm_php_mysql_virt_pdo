@@ -41,12 +41,12 @@ if (!$fp) {
           $uid = (isset($_POST['custom'])) ? (int)$_POST['custom'] : 0;
           $status = mysqli_real_escape_string($dbc, $_POST['payment_status']);
           $amount = (float)$_POST['mc_gross'];
-          $q = "INSERT INTO orders (user_id, traansaction_id, payment_status,
+          $q = "INSERT INTO orders (user_id, transaction_id, payment_status,
               payment_amount) VALUES ($uid, '$txn_id', '$status', $amount)";
           $r = mysqli_query($dbc, $q);
           if (mysqli_affected_rows($dbc) == 1) {
             if ($uid > 0) {
-              $q = "UPDATE users SET date_expires = IF(dte_expires > NOW(),
+              $q = "UPDATE users SET date_expires = IF(date_expires > NOW(),
                 ADDDATE(date_expires, INTERVAL 1 YEAR), ADDDATE(NOW(),
                 INTERVAL 1 YEAR)), date_modified=NOW() WHERE id=$uid";
               $r = mysqli_query($dbc, $q);
