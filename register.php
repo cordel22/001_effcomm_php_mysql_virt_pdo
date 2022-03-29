@@ -117,17 +117,57 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             You may now log in and access the site\'s content.</p>
             -->
             ';
-        //  page 146 / 163 update paypal sandbox button
+        //  page 146 / 163 update paypal sandbox button LPQD8LG7S2NF8
         //  page 152 / 169
-        echo '<form action="https://www.sandbox.paypal.com/cgi-bin/webscr" method="post">
-          /* <input type="hidden" name="custom" value="' . $uid . '"> */
-          <input type="hidden" name="cmd" value="_s-xclick">
-          /* <input type="hidden" name="email" value="' . $e . '"> */
-          <input type="hidden" name="hosted_button_id" value="8YW8FZDELF296">
-          <input type="image" src="https://www.sandbox.paypal.com/en_US/i/btn/btn_subscribeCC_LG.gif" border="0" name="submit" alt="PayPal - 
-            The safer, easier way to pay online!">
-          <img alt="" border="0" src="https://www.sandbox.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1">
-          </form>';
+        // echo '<form action="https://www.sandbox.paypal.com/cgi-bin/webscr" method="post">
+        //   /* <input type="hidden" name="custom" value="' . $uid . '"> */
+        //   <input type="hidden" name="cmd" value="_s-xclick">
+        //   /* <input type="hidden" name="email" value="' . $e . '"> */
+        //   <input type="hidden" name="hosted_button_id" value="8YW8FZDELF296">
+        //   <input type="image" src="https://www.sandbox.paypal.com/en_US/i/btn/btn_subscribeCC_LG.gif" border="0" name="submit" alt="PayPal - 
+        //     The safer, easier way to pay online!">
+        //   <img alt="" border="0" src="https://www.sandbox.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1">
+        //   </form>';
+
+        // priamo z paypalu subscription a  fynguje ale naozaj sa plati
+        // echo '<div id="paypal-button-container-P-0P680311AX3030015MJBVBOY"></div>
+        // <script src="https://www.paypal.com/sdk/js?client-id=AXsG165I5IZH5-zvBbLuZqinEgzCLiSUIL53QkLDZOmepLQic8ejLy3HbaojHHxOEM4cuAH_Zb2ptfhl&vault=true&intent=subscription" data-sdk-integration-source="button-factory"></script>
+        // <script>
+        //   paypal.Buttons({
+
+        //       createSubscription: function(data, actions) {
+        //         return actions.subscription.create({
+
+        //           plan_id: "P-0P680311AX3030015MJBVBOY"
+        //         });
+        //       },
+        //       onApprove: function(data, actions) {
+        //         alert(data.subscriptionID); // You can add optional success message for the subscriber here
+        //       }
+        //   }).render("#paypal-button-container-P-0P680311AX3030015MJBVBOY")
+        // </script>';
+
+
+        //  subscribtion so sandboxu!!!
+        echo '<div id="paypal-button-container-P-67C163112J3933803MJBYPUY"></div>
+        <script src="https://www.paypal.com/sdk/js?client-id=Af7KvhKgor3tDrGkVgpWv4xunqMtqnRB9uHhr9k3p9Z1NYOlCksPahTBa3-fsOxcXpwHb6RvChdpXCTy&vault=true&intent=subscription" data-sdk-integration-source="button-factory"></script>
+        <script>
+          paypal.Buttons({
+              
+              createSubscription: function(data, actions) {
+                return actions.subscription.create({
+                  /* Creates the subscription */
+                  plan_id: "P-67C163112J3933803MJBYPUY"
+                });
+              },
+              onApprove: function(data, actions) {
+                alert(data.subscriptionID); // You can add optional success message for the subscriber here
+              }
+          }).render("#paypal-button-container-P-67C163112J3933803MJBYPUY"); // Renders the PayPal button
+        </script>';
+
+
+
         $body = "Thank you for registering at <whatever site>. Blah. Blah. Blah.\n\n";
         mail($_POST['email'], 'Registration Confirmation', $body, 'From: cordelfenevall@gmail.com');
         include('./includes/footer.html');
