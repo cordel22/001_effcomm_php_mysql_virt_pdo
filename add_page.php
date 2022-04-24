@@ -25,7 +25,8 @@ $add_page_errors = array();
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   if (!empty($_POST['title'])) {
-    $t = mysqli_real_escape_string($dbc, strip_tags($_POST['title']));
+    //  $t = mysqli_real_escape_string($dbc, strip_tags($_POST['title']));
+    $t = strip_tags($_POST['title']);
   } else {
     $add_page_errors['title'] = 'Please enter the title!';
   }
@@ -36,22 +37,37 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $add_page_errors['category'] = 'Please select a category!';
   }
   if (!empty($_POST['description'])) {
-    $d = mysqli_real_escape_string($dbc, strip_tags($_POST['description']));
+    //  $d = mysqli_real_escape_string($dbc, strip_tags($_POST['description']));
+    $d = strip_tags($_POST['description']);
   } else {
     $add_page_errors['description'] = 'Please enter a description!';
   }
 
   if (!empty($_POST['content'])) {
     $allowed = '<div><p><span><br><a><img><h1><h2><h3><h4><ul><ol><li><blockquote>';
-    $c = mysqli_real_escape_string($dbc, strip_tags($_POST['content'], $allowed));
+    //  $c = mysqli_real_escape_string($dbc, strip_tags($_POST['content'], $allowed));
+    $c = strip_tags($_POST['content'], $allowed);
   } else {
     $add_page_errors['content'] = 'Please enter the content!';
   }
 
   if (empty($add_page_errors)) {  //  If everything's OK.
+    /* 
     $q = "INSERT INTO pages (category_id, title, description, content) VALUES ($cat, '$t', '$d', '$c')";
     $r = mysqli_query($dbc, $q);
-    if (mysqli_affected_rows($dbc) == 1) {  //  If it ran OK.
+ */
+    $sql = "INSERT INTO pages (category_id, title, description, content) 
+              VALUES (:category_id, :title, :description, :content)";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute(array(
+      ':category_id' => $cat,
+      ':title' => $t,
+      ':description' => $d,
+      ':content' => $c
+    ));
+
+    //  if (mysqli_affected_rows($dbc) == 1) {  //  If it ran OK.
+    if ($tmnt->rowCount() == 1) {
       echo '<h4>The page has been added!</h4>';
       $_POST = array();
     } else {  //  If it did not run OK.
@@ -78,9 +94,15 @@ require('includes/form_functions.inc.php');
                               )) echo ' class="error"'; ?>>
         <option>Select One</option>
         <?php //  Retrieve ll the categories and add to the pull-down menu:
+        /* 
         $q = "SELECT id, category FROM categories ORDER BY category ASC";
         $r = mysqli_query($dbc, $q);
-        while ($row = mysqli_fetch_array($r, MYSQLI_NUM)) {
+ */
+        $q = "SELECT id, category FROM categories ORDER BY category ASC";
+        $tmnt = $pdo->query($q);
+
+        //  while ($row = mysqli_fetch_array($r, MYSQLI_NUM)) {
+        while ($row = $tmnt->fetch(PDO::FETCH_NUM)) {
           echo "<option value=\"$row[0]\"";
           //  Check for stickyness:
           if (isset($_POST['category']) && ($_POST['category'] == $row[0]))

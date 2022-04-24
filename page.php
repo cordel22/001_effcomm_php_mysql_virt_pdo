@@ -4,18 +4,30 @@ require('./includes/config.inc.php');
 require(MYSQL);
 if (isset($_GET['id']) && filter_var($_GET['id'], FILTER_VALIDATE_INT, array('min_range' => 1))) {
   if (isset($_GET['id']) && ((int)$_GET['id'] >= 1)) {
+    /* 
     $q = 'SELECT title, description, content FROM pages WHERE id=' . $_GET['id'];
     $r = mysqli_query($dbc, $q);
-    if (mysqli_num_rows($r) != 1) {
+ *//* 
+    $q = 'SELECT title, description, content FROM pages WHERE id=' . $_GET['id'];
+    $tmnt = $pdo->query($q); */
+
+    $q = "SELECT title, description, content FROM pages WHERE id = :xyz";
+    $tmnt->execute(array(":xyz" => $_GET['id']));
+
+    $row_count = $tmnt->rowCount();
+
+    //  if (mysqli_num_rows($r) != 1) {
+    if ($row_count != 1) {
       $page_title = 'Error!';
       include('./includes/header.html');
       echo '<p class="error">This page hs been accessed in error.</p>';
       include('./includes/footer.html');
       exit();
     }
-    $row = mysqli_fetch_array($r, MYSQLI_ASSOC);
+    //  $row = mysqli_fetch_array($r, MYSQLI_ASSOC);
+    $row = $tmnt->fetch(PDO::FETCH_NUM);
     $page_title = $row['title'];
-    include('includes/heder.html');
+    include('includes/header.html');
     echo "<h3>$page_title</h3>";
 
     if (isset($_SESSION['user_not_expired'])) {

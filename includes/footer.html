@@ -60,7 +60,7 @@
           <li><a href="recommendations.php" title="View Your Recommendations">
             Recommendations
           </a></li>
-          <li><a href="logout.php" ttle="Logout">Logout</a></li>
+          <li><a href="logout.php" title="Logout">Logout</a></li>
         </ul>
         ';
         if (isset($_SESSION['user_admin'])) {
@@ -87,9 +87,13 @@
   ?>
 
   <?php
-    $q = 'SELECT * FROM categories ORDER BY category';
-    $r = mysqli_query($dbc,$q);
-    while(list($id, $category) = mysqli_fetch_array($r, MYSQLI_NUM)) {
+    //  $q = 'SELECT * FROM categories ORDER BY category';
+    
+    //  $r = mysqli_query($dbc,$q);
+    $stmt = $pdo->query("SELECT * FROM categories ORDER BY category");
+
+    //  while(list($id, $category) = mysqli_fetch_array($r, MYSQLI_NUM)) {
+    while(list($id, $category) = $stmt->fetch(PDO::FETCH_ASSOC)) {  //  prip. odstran list
       echo '<li><a href="category.php?id=' . $id . '"title="' . $category .
         '">' . $category . '</a></li>';
     }

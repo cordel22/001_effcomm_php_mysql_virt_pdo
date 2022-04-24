@@ -47,25 +47,29 @@ $reg_errors = array();
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   //  nezobere opakovane hodnoty, ale nevaruje o tom
   if (preg_match('/^[A-Z\'.-]{2,20}$/i', $_POST['first_name'])) {
-    $fn = mysqli_real_escape_string($dbc, $_POST['first_name']);
+    //  $fn = mysqli_real_escape_string($dbc, $_POST['first_name']);
+    $fn = $_POST['first_name'];
   } else {
     $reg_errors['first_name'] = 'Please enter your first name!';
   }
 
   if (preg_match('/^[A-Z\'.-]{2,40}$/i', $_POST['last_name'])) {
-    $ln = mysqli_real_escape_string($dbc, $_POST['last_name']);
+    //  $ln = mysqli_real_escape_string($dbc, $_POST['last_name']);
+    $ln = $_POST['last_name'];
   } else {
     $reg_errors['last_name'] = 'Please enter your last name!';
   }
 
   if (preg_match('/^[A-Z0-9]{2,30}$/i', $_POST['username'])) {
-    $u = mysqli_real_escape_string($dbc, $_POST['username']);
+    //  $u = mysqli_real_escape_string($dbc, $_POST['username']);
+    $u = $_POST['username'];
   } else {
     $reg_errors['username'] = 'Please enter a desired username!';
   }
 
   if (filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
-    $e = mysqli_real_escape_string($dbc, $_POST['email']);
+    //  $e = mysqli_real_escape_string($dbc, $_POST['email']);
+    $e = $_POST['email'];
   } else {
     $reg_errors['email'] = 'Please enter a valid email address!';
   }
@@ -73,7 +77,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   /* if (preg_match('/^(\w*(?=\w*\d)(?=\w*[a-z])(?=\w*[A-Z])\w*){6,20}$/', $_POST['pass1'])) { */
   if (preg_match('/^(?=.*\d)(?=.*[A-Z])(?=.*[a-z]).{6,20}$/', $_POST['pass1'])) {
     if ($_POST['pass1'] == $_POST['pass2']) {
-      $p = mysqli_real_escape_string($dbc, $_POST['pass1']);
+      //  $p = mysqli_real_escape_string($dbc, $_POST['pass1']);
+      $p = $_POST['pass1'];
     } else {
       $reg_errors['pass2'] = 'Your password did not match the confirmed password!';
     }
@@ -82,11 +87,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   }   //  End of preg_match
 
   if (empty($reg_errors)) {
+    /* 
     $q = "SELECT email, username FROM users WHERE email='$e' OR username='$u'";
     $r = mysqli_query($dbc, $q);
-    $rows = mysqli_num_rows($r);
+ */
+    $stmt = $pdo->query("SELECT email, username FROM users WHERE email='$e' OR username='$u'");
 
-    if ($rows == 0) { //  No problems!
+
+    //  $rows = mysqli_num_rows($r);
+    $row_count = $stmt->rowCount();
+
+    //  if ($rows == 0) { //  No problems!
+    if ($row_count == 0) {
       /* 
       $q = "INSERT INTO users (username, email, pass, first_name, last_name, date_expires)
            VALUES ('$u', '$e', '" . substr(password_hash($p, PASSWORD_DEFAULT), 5, 30) . "', '$fn', '$ln', ADDDATE(NOW(), INTERVAL 1 MONTH))"; */
@@ -94,16 +106,35 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       /* $q = "INSERT INTO users (username, email, pass, first_name, last_name, date_expires)
         VALUES ('$u', '$e', '" . get_password_hash($p) . "', '$fn', '$ln', SUBDATE(NOW(), INTERVAL 1 DAY))";
         */
+      /* toto funguje v mysqli cico
       $q = "INSERT INTO users (username, email, pass, first_name, last_name, date_expires)
           VALUES ('$u', '$e', '" . substr(password_hash($p, PASSWORD_DEFAULT), 5, 30) . "', '$fn', '$ln', SUBDATE(NOW(), INTERVAL 1 DAY))";
 
       $r = mysqli_query($dbc, $q);
+ */
+
+      $dat = date("Y-m-d", strtotime('tomorrow'));
+
+      $sql = "INSERT INTO users (username, email, pass, first_name, last_name, date_expires)
+              VALUES (:username, :email, :pass, :first_name, :last_name, :date_expires)";
+      $stmt = $pdo->prepare($sql);
+      $stmt->execute(array(
+        ':username' => $u,
+        ':email' => $e,
+        ':pass' => substr($p, 5, 30),
+        ':first_name' => $fn,
+        ':last_name' => $ln,
+        //  ':date_expires' => 'SUBDATE(NOW(), INTERVAL 1 DAY)'
+        ':date_expires' => $dat
+      ));
 
 
 
-      if (mysqli_affected_rows($dbc) == 1) {
+      //  if (mysqli_affected_rows($dbc) == 1) {
+      if ($stmt->rowCount() == 1) {
         //  p 146 / 163
-        $uid = mysqli_insert_id($dbc);
+        //  $uid = mysqli_insert_id($dbc);
+        $uid = $pdo->lastInsertId();
         $_SESSION['reg_user_id'] = $uid;
         //  page 145 / 162 update
         echo '<h3>Thanks!</h3>
@@ -169,7 +200,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 
         $body = "Thank you for registering at <whatever site>. Blah. Blah. Blah.\n\n";
-        mail($_POST['email'], 'Registration Confirmation', $body, 'From: cordelfenevall@gmail.com');
+        //  samozrejme smtp nefunguje at localserver...
+        //  mail($_POST['email'], 'Registration Confirmation', $body, 'From: cordelfenevall@gmail.com');
         include('./includes/footer.html');
         exit();
       } else {
@@ -184,7 +216,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $reg_errors['username'] = 'This username has already been 
           registered. Please try another.';
       } else {  //  One or both may be taken.
-        $row = mysqli_fetch_array($r, MYSQLI_NUM);
+        //$row = mysqli_fetch_array($r, MYSQLI_NUM);
+        $row = $stmt->fetch(PDO::FETCH_NUM);
         if (($row[0] == $_POST['email']) && ($row[1] == $_POST['username'])) { //  Both match.
           $reg_errors['email'] = 'This email address has already been
             registered. If you have forgotten your password, use the link at

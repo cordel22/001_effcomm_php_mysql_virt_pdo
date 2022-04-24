@@ -11,14 +11,16 @@ $add_pdf_errors = array();
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   if (!empty($_POST['title'])) {
-    $t = mysqli_real_escape_string($dbc, strip_tags($_POST['title']));
+    //  $t = mysqli_real_escape_string($dbc, strip_tags($_POST['title']));
+    $t = strip_tags($_POST['title']);
   } else {
     $add_pdf_errors['title'] = 'Plese enter the  title!';
   }
   if (!empty($_POST['description'])) {
-    $d = mysqli_real_escape_string($dbc, strip_tags(
+    // $d = mysqli_real_escape_string($dbc, strip_tags(
+    $d = strip_tags(
       $_POST['description']
-    ));
+    );
   } else {
     $add_pdf_errors['description'] = 'Plese enter the description!';
   }
@@ -71,14 +73,29 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   }   //  End of $_FILES IF-ELSEIF-ELSE.
 
   if (empty($add_pdf_errors)) { //  If everything's OK.
-    $fn = mysqli_real_escape_string($dbc, $_SESSION['pdf']['file_name']);
-    $tmp_name = mysqli_real_escape_string($dbc, $_SESSION['pdf']['tmp_name']);
+    //  $fn = mysqli_real_escape_string($dbc, $_SESSION['pdf']['file_name']);
+    $fn = $_SESSION['pdf']['file_name'];
+    //  $tmp_name = mysqli_real_escape_string($dbc, $_SESSION['pdf']['tmp_name']);
+    $tmp_name = $_SESSION['pdf']['tmp_name'];
     $size = (int) $_SESSION['pdf']['size'];
+    /* 
     $q = "INSERT INTO pdfs (tmp_name, title, description, file_name, size)
       VALUES ('$tmp_name', '$t', '$d', '$fn', $size)";
     $r = mysqli_query($dbc, $q);
+ */
+    $sql = "INSERT INTO pdfs (tmp_name, title, description, file_name, size) 
+      VALUES (:tmp_name, :title, :description, :file_name, :size)";
+    $tmnt = $pdo->prepare($sql);
+    $tmnt->execute(array(
+      ':tmp_name' => $tmp_name,
+      ':title' => $t,
+      ':description' => $d,
+      ':file_name' => $fn,
+      ':size' => $size
+    ));
 
-    if (mysqli_affected_rows($dbc) == 1) {  //  If it ran OK.
+    //  if (mysqli_affected_rows($dbc) == 1) {  //  If it ran OK.
+    if ($tmnt->rowCount() == 1) {
       $original = PDFS_DIR . $_SESSION['pdf']['tmp_name'] . '_tmp';
       $dest = PDFS_DIR . $_SESSION['pdf']['tmp_name'];
       rename($original, $dest);

@@ -34,23 +34,60 @@ if (!$fp) {
         && (!empty($_POST['txn_id']))
       ) {
         require(MYSQL);
-        $txn_id = mysqli_real_escape_string($dbc, $_POST['txn_id']);
+        //  $txn_id = mysqli_real_escape_string($dbc, $_POST['txn_id']);
+        $txn_id = $_POST['txn_id'];
+        /* 
         $q = "SELECT id FROM orders WHERE transaction_id='$txn_id'";
         $r = mysqli_query($dbc, $q);
-        if (mysqli_num_rows($r) == 0) {
+ */
+        $stmt = $pdo->prepare("SELECT id FROM orders WHERE transaction_id = :xyz");
+        $stmt->execute(array(":xyz" => $txn_id));
+
+        $row_count = $tmnt->rowCount();
+
+        //  if (mysqli_num_rows($r) == 0) {
+        if ($row_count > 0) {
           $uid = (isset($_POST['custom'])) ? (int)$_POST['custom'] : 0;
           $status = mysqli_real_escape_string($dbc, $_POST['payment_status']);
           $amount = (float)$_POST['mc_gross'];
+          /* 
           $q = "INSERT INTO orders (user_id, transaction_id, payment_status,
               payment_amount) VALUES ($uid, '$txn_id', '$status', $amount)";
           $r = mysqli_query($dbc, $q);
-          if (mysqli_affected_rows($dbc) == 1) {
+ */
+          $sql = "INSERT INTO orders (user_id, transaction_id, payment_status,
+              payment_amount)  VALUES (:user_id, :transaction_id, :payment_status, :payment_amount)";
+          $tmnt = $pdo->prepare($sql);
+          $tmnt->execute(array(
+            ':user_id' => $uid,
+            ':transaction_id' => $txn_id,
+            ':payment_status' => $status,
+            ':payment_amount' => $amount
+          ));
+
+          //  if (mysqli_affected_rows($dbc) == 1) {
+          if ($tmnt->rowCount() == 1) {
             if ($uid > 0) {
+              /* 
               $q = "UPDATE users SET date_expires = IF(date_expires > NOW(),
                 ADDDATE(date_expires, INTERVAL 1 YEAR), ADDDATE(NOW(),
                 INTERVAL 1 YEAR)), date_modified=NOW() WHERE id=$uid";
               $r = mysqli_query($dbc, $q);
-              if (mysqli_affected_rows($dbc) != 1) {
+ */
+              $sql = "UPDATE users SET date_expires = :date_expires,
+            date_modified = :date_modified WHERE id = :id";
+              $stmt = $pdo->prepare($sql);
+              $stmt->execute(array(
+                ':date_expires' => 'IF(date_expires > NOW(),
+        ADDDATE(date_expires, INTERVAL 1 YEAR), ADDDATE(NOW(),
+        INTERVAL 1 YEAR))',
+                ':date_modified' => 'NOW()',
+                ':id' => $uid
+              ));
+
+
+              //  if (mysqli_affected_rows($dbc) != 1) {
+              if ($tmnt->rowCount() !== 1) {
                 trigger_error('The user\'s expiration date could not be updated!');
               }
             }

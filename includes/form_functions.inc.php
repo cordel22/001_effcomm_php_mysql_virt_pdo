@@ -31,21 +31,23 @@ function create_form_input($name, $type, $errors)
 } //  End of the create_form_input() function.
 
 //  p.78  / 95
-
+/* 
 function get_password_hash($password)
 {
   global $dbc;
   return mysqli_real_escape_string($dbc, hash_hmac('sha256', $password, 'c#haRl891', true));
 }
+ */
 
-function redirect_invalid_user($check = 'user_id', $destination = 'index.php', $protocol = ''/* 'http://' */) //  localhost dont need protocol
-{
-  if (!isset($_SESSION[$check])) {
-    $url = $protocol . BASE_URL . $destination;
-    header("Location:$url");
-    exit();
-  }
-}
+//  declred in config.inc.php
+// function redirect_invalid_user($check = 'user_id', $destination = 'index.php', $protocol = ''/* 'http://' */) //  localhost dont need protocol
+// {
+//   if (!isset($_SESSION[$check])) {
+//     $url = $protocol . BASE_URL . $destination;
+//     header("Location:$url");
+//     exit();
+//   }
+// }
 
 if (!headers_sent()) {
   //  Redirect code.

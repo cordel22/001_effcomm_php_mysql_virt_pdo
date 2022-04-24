@@ -18,10 +18,20 @@ if (isset($_SESSION['user_id']) && !isset($_SESSION['user_not_expired'])) {
       You must be logged in as a registered user to view any of the PDFs
       listed below.</p>';
 }
+/* 
 $q = 'SELECT tmp_name, title, description, size FROM pdfs ORDER BY date_created DESC';
 $r = mysqli_query($dbc, $q);
-if (mysqli_num_rows($r) > 0) {
-  while ($row = mysqli_fetch_array($r, MYSQLI_ASSOC)) {
+ */
+$q = "SELECT tmp_name, title, description, size 
+          FROM pdfs ORDER BY date_created DESC";
+$tmnt = $pdo->query($q);
+
+$row_count = $tmnt->rowCount();
+
+//  if (mysqli_num_rows($r) > 0) {
+if ($row_count > 0) {
+  //  while ($row = mysqli_fetch_array($r, MYSQLI_ASSOC)) {
+  while ($row = $tmnt->fetch(PDO::FETCH_NUM)) {
     //  debug view_pdf.php to pdf.php
     /* echo "<div><h4><a href=\"view_pdf.php?id={$row['tmp_name']}\"> */
     echo "<div><h4><a href=\"pdf.php?id={$row['tmp_name']}\">

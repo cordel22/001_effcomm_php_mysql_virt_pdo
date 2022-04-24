@@ -1,4 +1,5 @@
 <?php
+//  possibly view_pdf.bhp p.  132 / 149
 require('./includes/config.inc.php');
 require(MYSQL);
 
@@ -10,11 +11,25 @@ if (
 ) {
   $file = PDFS_DIR . $_GET['id'];
   if (file_exists($file) && (is_file($file))) {
+    /* 
     $q = 'SELECT title,description,file_name FROM pdfs WHERE
           tmp_name="' . mysqli_real_escape_string($dbc, $_GET['id']) . '"';
     $r = mysqli_query($dbc, $q);
-    if (mysqli_num_rows($r) == 1) { //  OK!
-      $row = mysqli_fetch_array($r, MYSQLI_ASSOC);
+ */
+    $sql = 'SELECT title,description,file_name FROM pdfs WHERE
+          tmp_name = :tmp_name';
+
+    $tmnt = $pdo->prepare($sql);
+    $tmnt->execute(array(
+      ':tmp_name' => $_GET['id']
+    ));
+
+    $row_count = $tmnt->rowCount();
+
+    //  if (mysqli_num_rows($r) == 1) { //  OK!
+    if ($row_count == 1) {
+      //  $row = mysqli_fetch_array($r, MYSQLI_ASSOC);
+      $row = $tmnt->fetch(PDO::FETCH_NUM);
       $valid = true;
 
       if (isset($_SESSION['user_not_expired'])) {

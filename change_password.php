@@ -11,13 +11,15 @@ $pass_errors = array();
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   if (!empty($_POST['current'])) {
-    $current = mysqli_real_escape_string($dbc, $_POST['current']);
+    //  $current = mysqli_real_escape_string($dbc, $_POST['current']);
+    $current = $_POST['current'];
   } else {
     $pass_errors['current'] = 'Please enter your current password!';
   }
   if (preg_match('/^(\w*(?=\w*\d)(?=\w*[a-z])(?=\w*[A-Z])\w*){6,20}$/', $_POST['pass1'])) {
     if ($_POST['pass1'] == $_POST['pass2']) {
-      $p = mysqli_real_escape_string($dbc, $_POST['pass1']);
+      //  $p = mysqli_real_escape_string($dbc, $_POST['pass1']);
+      $p = $_POST['pass1'];
     } else {
       $pass_errors['pass2'] = 'Your password did not match the
           confirmed password!';
@@ -27,13 +29,35 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   }
 
   if (empty($pass_errors)) {  //  If everything's OK.
+    /*  
     $q = "SELECT id FROM users WHERE pass='" . get_password_hash($current)
       . "' AND id={$_SESSION['user_id']}";
     $r = mysqli_query($dbc, $q);
-    if (mysqli_num_rows($r) == 1) { //  Correct
+ */
+    $q = "SELECT id FROM users WHERE pass = :pass AND id=:id";
+    //  $r = mysqli_query($dbc, $q);
+    $stmt = $pdo->prepare($q);
+    $stmt->execute(array(":pass" =>  $current, ":id" => $_SESSION['user_id']));
+
+    //  if (mysqli_num_rows($r) == 1) { //  Correct
+    $row_count = $stmt->rowCount();
+    if ($row_count == 1) {
+      /* 
       $q = "UPDATE users SET pass='" . get_password_hash($p) . "' WHERE
         id = {$_SESSION['user_id']} LIMIT 1";
-      if ($r = mysqli_query($dbc, $q)) {  //  If it ran OK.
+ */
+      $sql = "UPDATE users SET pass = :pass WHERE id = :id LIMIT 1";
+      $stmt = $pdo->prepare($sql);
+      $stmt->execute(array(
+        ':pass' => $p,
+        ':id' => $_SESSION['user_id']
+      ));
+
+      //  if ($r = mysqli_query($dbc, $q)) {  //  If it ran OK.
+      if ($stmt->execute(array(
+        ':pass' => $p,
+        ':id' => $_SESSION['user_id']
+      ))) {  //  If it ran OK.
         echo '<h3>Your password has been changed.</h3>';
         include('./includes/footer.html');
         exit();

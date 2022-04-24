@@ -6,7 +6,8 @@ require_once('./includes/form_functions.inc.php');
 <div class="title">
   <h4>Login</h4>
 </div>
-<form action="index.php" method="post" accept-charset="utf-8">
+<!-- <form action="index.php" method="post" accept-charset="utf-8"> -->
+<form action="./includes/login.inc.php" method="post" accept-charset="utf-8">
   <p>
     <?php
     if (array_key_exists('login', $login_errors)) {
